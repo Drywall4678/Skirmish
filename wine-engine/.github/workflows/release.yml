@@ -17,23 +17,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare dist folder
-        run: mkdir -p dist
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
 
-      - name: Build Wine for arm64
-        run: |
-          chmod +x scripts/build-arm64.sh
-          scripts/build-arm64.sh
+      - name: Bootstrap
+        run: scripts/bootstrap-macos.sh
 
-      - name: Build Wine for x86_64
-        run: |
-          chmod +x scripts/build-x86_64.sh
-          scripts/build-x86_64.sh
+      - name: Build arm64
+        run: scripts/build-arm64.sh
+
+      - name: Build x86_64
+        run: scripts/build-x86_64.sh
 
       - name: Package release archives
-        run: |
-          chmod +x scripts/package-release.sh
-          scripts/package-release.sh
+        run: scripts/package-release.sh
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
