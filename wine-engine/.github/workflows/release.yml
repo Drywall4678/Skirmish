@@ -1,0 +1,45 @@
+name: Build and Release Wine Engine
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare dist folder
+        run: mkdir -p dist
+
+      - name: Build Wine for arm64
+        run: |
+          chmod +x scripts/build-arm64.sh
+          scripts/build-arm64.sh
+
+      - name: Build Wine for x86_64
+        run: |
+          chmod +x scripts/build-x86_64.sh
+          scripts/build-x86_64.sh
+
+      - name: Package release archives
+        run: |
+          chmod +x scripts/package-release.sh
+          scripts/package-release.sh
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/wine-macos-arm64.zip
+            dist/wine-macos-x86_64.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
