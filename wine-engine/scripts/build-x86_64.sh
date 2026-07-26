@@ -1,8 +1,35 @@
 #!/bin/bash
 set -euo pipefail
 
-mkdir -p build/x86_64
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
 
-# Replace this with your real Wine build steps.
-# For now, this is a placeholder that expects a Wine.app bundle to be produced.
-echo "Build x86_64 script placeholder"
+ensure_dirs
+require_cmd clang
+require_cmd make
+require_cmd pkg-config
+
+ARCH="x86_64"
+OUT_DIR="$BUILD_DIR/$ARCH"
+SRC_DIR="$BUILD_DIR/src"
+PREFIX="$OUT_DIR/prefix"
+
+mkdir -p "$OUT_DIR" "$SRC_DIR" "$PREFIX"
+
+log "Building Wine engine for $ARCH"
+log "Output directory: $OUT_DIR"
+
+# Replace this section with your real Wine source build steps.
+# Example scaffold:
+# cd "$SRC_DIR/wine-source"
+# export CC=clang
+# export CFLAGS="-arch x86_64"
+# export LDFLAGS="-arch x86_64"
+# ./configure --prefix="$PREFIX"
+# make -j"$(sysctl -n hw.ncpu)"
+# make install
+
+make_bundle_layout "$OUT_DIR"
+touch "$OUT_DIR/Wine.app/Contents/MacOS/wine"
+chmod +x "$OUT_DIR/Wine.app/Contents/MacOS/wine"
+
+log "x86_64 build scaffold complete"
